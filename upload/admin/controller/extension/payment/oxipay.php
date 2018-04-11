@@ -13,11 +13,11 @@ class ControllerExtensionPaymentOxipay extends Controller {
         $this->load->model('setting/setting');
 
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-            $this->model_setting_setting->editSetting('oxipay', $this->request->post);
+            $this->model_setting_setting->editSetting('payment_oxipay', $this->request->post);
 
             $this->session->data['success'] = $this->language->get('text_success');
 
-            $this->response->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=payment', true));
+            $this->response->redirect($this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true));
         }
 
         // Error Strings
@@ -47,19 +47,19 @@ class ControllerExtensionPaymentOxipay extends Controller {
         $data['breadcrumbs'] = [
             [
                 'text' => $this->language->get('text_home'),
-                'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true),
+                'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true),
             ], [
                 'text' => $this->language->get('text_extension'),
-                'href' => $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=payment', true),
+                'href' => $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true),
             ], [
                 'text' => $this->language->get('heading_title'),
-                'href' => $this->url->link('extension/payment/oxipay', 'token=' . $this->session->data['token'], true),
+                'href' => $this->url->link('extension/payment/oxipay', 'user_token=' . $this->session->data['user_token'], true),
             ],
         ];
 
         // Actions / Links
-        $data['action'] = $this->url->link('extension/payment/oxipay', 'token=' . $this->session->data['token'], true);
-        $data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=payment', true);
+        $data['action'] = $this->url->link('extension/payment/oxipay', 'user_token=' . $this->session->data['user_token'], true);
+        $data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true);
 
         // Dropdown Data
         $this->load->model('localisation/geo_zone');
@@ -72,25 +72,25 @@ class ControllerExtensionPaymentOxipay extends Controller {
 
         // Form Values
         $keys = [
-            'oxipay_title',
-            'oxipay_description',
-            'oxipay_shop_name',
-            'oxipay_region',
-            'oxipay_gateway_environment',
-            'oxipay_gateway_url',
-            'oxipay_merchant_id',
-            'oxipay_api_key',
-            'oxipay_order_status_completed_id',
-            'oxipay_order_status_pending_id',
-            'oxipay_order_status_failed_id',
-            'oxipay_geo_zone_id',
-            'oxipay_status',
-            'oxipay_sort_order',
+            'payment_oxipay_title',
+            'payment_oxipay_description',
+            'payment_oxipay_shop_name',
+            'payment_oxipay_region',
+            'payment_oxipay_gateway_environment',
+            'payment_oxipay_gateway_url',
+            'payment_oxipay_merchant_id',
+            'payment_oxipay_api_key',
+            'payment_oxipay_order_status_completed_id',
+            'payment_oxipay_order_status_pending_id',
+            'payment_oxipay_order_status_failed_id',
+            'payment_oxipay_geo_zone_id',
+            'payment_oxipay_status',
+            'payment_oxipay_sort_order',
         ];
 
         $defaults = [
-            'oxipay_title' => 'Oxipay',
-            'oxipay_description' => 'Pay the easier way',
+            'payment_oxipay_title' => 'Oxipay',
+            'payment_oxipay_description' => 'Pay the easier way',
         ];
 
         foreach ($keys as $key) {
@@ -98,8 +98,10 @@ class ControllerExtensionPaymentOxipay extends Controller {
                 $data[$key] = $this->request->post[$key];
             } else if (!$this->config->has($key) && isset($defaults[$key])) {
                 $data[$key] = $defaults[$key];
-            } else {
+            } else if ($this->config->has($key)) {
                 $data[$key] = $this->config->get($key);
+            } else {
+                $data[$key] = "";
             }
         }
 
@@ -121,10 +123,10 @@ class ControllerExtensionPaymentOxipay extends Controller {
         }
 
         $keys = [
-            'oxipay_title' => 'Title',
-            'oxipay_region' => 'Region',
-            'oxipay_merchant_id' => 'Merchant ID',
-            'oxipay_api_key' => 'API Key',
+            'payment_oxipay_title' => 'Title',
+            'payment_oxipay_region' => 'Region',
+            'payment_oxipay_merchant_id' => 'Merchant ID',
+            'payment_oxipay_api_key' => 'API Key',
         ];
 
         foreach ($keys as $key => $name) {
@@ -134,8 +136,8 @@ class ControllerExtensionPaymentOxipay extends Controller {
         }
 
         if (
-            $this->request->post['oxipay_environment'] == 'other'
-            && preg_match('@^https://@', $this->request->post['oxipay_gateway_url']) !== 1
+            $this->request->post['payment_oxipay_environment'] == 'other'
+            && preg_match('@^https://@', $this->request->post['payment_oxipay_gateway_url']) !== 1
         ) {
             $this->error['oxipay_gateway_url'] = $this->language->get('error_gateway_url_format');
         }

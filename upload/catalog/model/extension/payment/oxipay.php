@@ -7,11 +7,11 @@ class ModelExtensionPaymentOxipay extends Model {
      * @return mixed[]
      */
     public function getMethod($address, $total) {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "zone_to_geo_zone WHERE geo_zone_id = '" . (int)$this->config->get('oxipay_geo_zone_id') . "' AND country_id = '" . (int)$address['country_id'] . "' AND (zone_id = '" . (int)$address['zone_id'] . "' OR zone_id = '0')");
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "zone_to_geo_zone WHERE geo_zone_id = '" . (int)$this->config->get('payment_oxipay_geo_zone_id') . "' AND country_id = '" . (int)$address['country_id'] . "' AND (zone_id = '" . (int)$address['zone_id'] . "' OR zone_id = '0')");
 
         $status = false;
 
-        if (!$this->config->get('oxipay_geo_zone_id')) {
+        if (!$this->config->get('payment_oxipay_geo_zone_id')) {
             $status = true;
         } elseif ($query->num_rows) {
             $status = true;
@@ -20,13 +20,13 @@ class ModelExtensionPaymentOxipay extends Model {
         $method_data = [];
 
         if ($status) {
-            $title = $this->config->get('oxipay_title');
+            $title = $this->config->get('payment_oxipay_title');
 
             $method_data = [
                 'code'       => 'oxipay',
-                'title'      => $this->config->get('oxipay_title'),
-                'terms'      => $this->config->get('oxipay_description'),
-                'sort_order' => $this->config->get('oxipay_sort_order'),
+                'title'      => $this->config->get('payment_oxipay_title'),
+                'terms'      => $this->config->get('payment_oxipay_description'),
+                'sort_order' => $this->config->get('payment_oxipay_sort_order'),
             ];
         }
 
@@ -51,7 +51,7 @@ class ModelExtensionPaymentOxipay extends Model {
             }
         }
 
-        $hash = hash_hmac('sha256', $string, $this->config->get('oxipay_api_key'));
+        $hash = hash_hmac('sha256', $string, $this->config->get('payment_oxipay_api_key'));
 
         return str_replace('-', '', $hash);
     }
@@ -99,20 +99,20 @@ class ModelExtensionPaymentOxipay extends Model {
 
         $params = [
             // Required
-            'x_account_id' => $this->config->get('oxipay_merchant_id'),
+            'x_account_id' => $this->config->get('payment_oxipay_merchant_id'),
             'x_amount' => $this->currency->format($order_info['total'], $order_info['currency_code'], $order_info['currency_value'], false),
             'x_currency' => $order_info['currency_code'],
             'x_reference' => $this->session->data['order_id'],
-            'x_shop_country' => $this->config->get('oxipay_region'),
-            'x_shop_name' => $this->config->get('oxipay_shop_name'),
+            'x_shop_country' => $this->config->get('payment_oxipay_region'),
+            'x_shop_name' => $this->config->get('payment_oxipay_shop_name'),
             'x_test' => 'false',
             'x_url_callback' => $this->url->link('extension/payment/oxipay/callback', '', true),
             // Proxy files required as gateway doesn't append resulting request
             //  arguments to existing ones.
-            'x_url_cancel' => $url_prefix . 'oxipay/cancel.php',
-            'x_url_complete' => $url_prefix . 'oxipay/complete.php',
-            //'x_url_cancel' => $this->url->link('extension/payment/oxipay/cancel', '', true),
-            //'x_url_complete' => $this->url->link('extension/payment/oxipay/complete', '', true),
+            // 'x_url_cancel' => $url_prefix . 'catalog/controller/extension/payment/oxipay-cancel.php',
+            // 'x_url_complete' => $url_prefix . 'catalog/controller/extension/payment/oxipay-complete.php',
+            'x_url_cancel' => $this->url->link('extension/payment/oxipay/cancel', '', true),
+            'x_url_complete' => $this->url->link('extension/payment/oxipay/complete', '', true),
 
             // Optional
             'x_customer_first_name' => $order_info['payment_firstname'],
@@ -165,9 +165,9 @@ class ModelExtensionPaymentOxipay extends Model {
      */
     public function getStatuses() {
         return [
-            'completed' => $this->config->get('oxipay_order_status_completed_id'),
-            'pending' => $this->config->get('oxipay_order_status_pending_id'),
-            'failed' => $this->config->get('oxipay_order_status_failed_id'),
+            'completed' => $this->config->get('payment_oxipay_order_status_completed_id'),
+            'pending' => $this->config->get('payment_oxipay_order_status_pending_id'),
+            'failed' => $this->config->get('payment_oxipay_order_status_failed_id'),
         ];
     }
 
@@ -190,13 +190,13 @@ class ModelExtensionPaymentOxipay extends Model {
      * @return string
      */
     public function getGatewayUrl() {
-        $environment = $this->config->get('oxipay_gateway_environment');
+        $environment = $this->config->get('payment_oxipay_gateway_environment');
 
         if ($environment == 'other') {
-            return $this->config->get('oxipay_gateway_url');
+            return $this->config->get('payment_oxipay_gateway_url');
         }
 
-        $region = $this->config->get('oxipay_region');
+        $region = $this->config->get('payment_oxipay_region');
 
         if ($region == 'NZ') {
             $tld = 'co.nz';
