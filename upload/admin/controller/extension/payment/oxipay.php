@@ -91,6 +91,9 @@ class ControllerExtensionPaymentOxipay extends Controller {
         $defaults = [
             'payment_oxipay_title' => 'Oxipay',
             'payment_oxipay_description' => 'Pay the easier way',
+            'payment_oxipay_order_status_completed_id' => 5,
+            'payment_oxipay_order_status_pending_id'=> 1,
+            'payment_oxipay_order_status_failed_id' => 10,
         ];
 
         foreach ($keys as $key) {
@@ -135,11 +138,10 @@ class ControllerExtensionPaymentOxipay extends Controller {
             }
         }
 
-        if (
-            $this->request->post['payment_oxipay_environment'] == 'other'
-            && preg_match('@^https://@', $this->request->post['payment_oxipay_gateway_url']) !== 1
+        if ( 
+            $this->request->post['payment_oxipay_gateway_environment'] == 'other' && (!isset($this->request->post['payment_oxipay_gateway_url']) || preg_match('@^https://@', $this->request->post['payment_oxipay_gateway_url']) !== 1 )
         ) {
-            $this->error['oxipay_gateway_url'] = $this->language->get('error_gateway_url_format');
+            $this->error['oxipay_gateway_url'] = $this->language->get('error_gateway_url_format');            
         }
 
         return !$this->error;
