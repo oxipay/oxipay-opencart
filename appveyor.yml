@@ -5,7 +5,7 @@ branches:
     - test
 environment:
   tag_name: "%APPVEYOR_REPO_TAG_NAME%"
-  release_name: "oxipay-opencart-%APPVEYOR_REPO_BRANCH%_v%APPVEYOR_REPO_TAG_NAME%.ocmod.zip"
+  release_name: "oxipay-opencart-%APPVEYOR_REPO_BRANCH%.ocmod.zip"
 build_script:
   - ps: Invoke-Expression "7z a $env:release_name"
 artifacts:
