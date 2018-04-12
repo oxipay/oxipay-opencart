@@ -2,6 +2,7 @@ branches:
   only:
     - OC-3.0
     - OC-2.3
+    - test
 environment:
   tag_name: "%APPVEYOR_REPO_TAG_NAME%"
   release_name: "oxipay-opencart-%APPVEYOR_REPO_BRANCH%_v%APPVEYOR_REPO_TAG_NAME%.ocmod.zip"
@@ -21,8 +22,7 @@ deploy:
     artifact: /.*\.zip/
     draft: false
     prerelease: false
-    on:
-      appveyor_repo_tag: true
+    
 notifications:
   - provider: Email
     to:
