@@ -44,12 +44,17 @@ class ControllerExtensionPaymentOxipay extends Controller {
             $order_info = $this->getOrderAndVerifyResponse($this->request->post);
         } catch (\Exception $e) {
             // Handle callback error
-            return $this->callbackBadRequest($e->getMessage());
+            $reference_id = "";
+            if (isset($this->request->post['x_reference'])){
+                $reference_id = $this->request->post['x_reference'];
+            }
+            return $this->callbackBadRequest($reference_id, $e->getMessage());
         }
 
-        $this->updateOrder($order_info, $this->request->post);
+        $result = $this->updateOrder($order_info, $this->request->post);
 
-        $this->response->setOutput('');
+        $this->response->addHeader('Content-type: application/json');
+        $this->response->setOutput(json_encode(['reference_id' => $this->request->post['x_reference'], 'status' => $result]));
     }
 
     /**
@@ -99,7 +104,7 @@ class ControllerExtensionPaymentOxipay extends Controller {
      *
      * @return void
      */
-    private function callbackBadRequest($comment) {
+    private function callbackBadRequest($reference_id, $comment) {
         $params = [];
 
         foreach ($this->request->post as $key => $value) {
@@ -110,7 +115,8 @@ class ControllerExtensionPaymentOxipay extends Controller {
 
         $this->response->addHeader($this->request->server['SERVER_PROTOCOL'] . ' 400 Bad Request');
 
-        $this->response->setOutput('');
+        $this->response->addHeader('Content-type: application/json');
+        $this->response->setOutput(json_encode(["reference_id" => $reference_id, "status" => $comment]));
     }
 
     /**
@@ -176,6 +182,7 @@ class ControllerExtensionPaymentOxipay extends Controller {
         $comment = strip_tags($comment);
 
         $this->model_checkout_order->addOrderHistory($order_info['order_id'], $order_status_id, $comment, false);
+        return $request['x_result'];
     }
 
     /**
