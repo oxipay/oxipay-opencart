@@ -5,7 +5,7 @@ branches:
     - test
 environment:
   tag_name: "%appveyor_repo_tag_name%"
-  release_name: "oxipay-opencart-1.x_v%appveyor_repo_tag_name%.zip"
+  release_name: "oxipay-opencart-1.x_v$(APPVEYOR_REPO_TAG_NAME).zip"
 build_script:
   - ps: Invoke-Expression "7z a $env:release_name"
 artifacts:
@@ -22,8 +22,8 @@ deploy:
     artifact: /.*\.zip/
     draft: false
     prerelease: false
-    on:
-      appveyor_repo_tag: true
+    # on:
+    #   appveyor_repo_tag: true
 notifications:
   - provider: Email
     to:
