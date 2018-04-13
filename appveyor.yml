@@ -6,8 +6,6 @@ branches:
 environment:
   tag_name: "%appveyor_repo_tag_name%"
   release_name: "oxipay-opencart-1.x_v%appveyor_repo_tag_name%.zip"
-before_build:
-  - ps: (Get-Content app/code/community/Oxipay/Oxipayments/etc/config.xml).replace("oxipay_plugin_version_placeholder", $env:APPVEYOR_REPO_TAG_NAME ) | Set-Content app/code/community/Oxipay/Oxipayments/etc/config.xml
 build_script:
   - ps: Invoke-Expression "7z a $env:release_name"
 artifacts:
@@ -29,7 +27,7 @@ deploy:
 notifications:
   - provider: Email
     to:
-      - devadmin@oxipay.com.au
+      - tao.wang@oxipay.com.au
   - provider: Slack
     auth_token:
       secure: yXpzER0fyDmh7wYR6zrrES+wGzz5010OpUvpb5UPMsQZO12Ag3TaeOjSsZ0tDQQ4WaNoNngsPOPiaYWmsfg3fhJrSyPy240FqSwDdhSPqC0=
