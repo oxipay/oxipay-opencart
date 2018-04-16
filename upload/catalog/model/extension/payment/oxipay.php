@@ -109,10 +109,10 @@ class ModelExtensionPaymentOxipay extends Model {
             'x_url_callback' => $this->url->link('extension/payment/oxipay/callback', '', true),
             // Proxy files required as gateway doesn't append resulting request
             //  arguments to existing ones.
-            'x_url_cancel' => $url_prefix . 'oxipay/cancel.php',
-            'x_url_complete' => $url_prefix . 'oxipay/complete.php',
-            //'x_url_cancel' => $this->url->link('extension/payment/oxipay/cancel', '', true),
-            //'x_url_complete' => $this->url->link('extension/payment/oxipay/complete', '', true),
+            // 'x_url_cancel' => $url_prefix . 'oxipay/cancel.php',
+            // 'x_url_complete' => $url_prefix . 'oxipay/complete.php',
+            'x_url_cancel' => $this->url->link('extension/payment/oxipay/cancel', '', true),
+            'x_url_complete' => $this->url->link('extension/payment/oxipay/complete', '', true),
 
             // Optional
             'x_customer_first_name' => $order_info['payment_firstname'],
@@ -134,7 +134,6 @@ class ModelExtensionPaymentOxipay extends Model {
             'x_customer_shipping_postcode' => $order_info['shipping_postcode'],
             'x_customer_shipping_country' => '',
             'x_description' => 'Order #' . $order_info['order_id'],
-            'abc123' => '1111',
         ];
 
         if ($payment_country_info) {

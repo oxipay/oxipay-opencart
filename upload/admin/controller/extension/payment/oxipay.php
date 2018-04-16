@@ -91,6 +91,9 @@ class ControllerExtensionPaymentOxipay extends Controller {
         $defaults = [
             'oxipay_title' => 'Oxipay',
             'oxipay_description' => 'Pay the easier way',
+            'oxipay_order_status_completed_id' => 5, 
+            'oxipay_order_status_pending_id'=> 1, 
+            'oxipay_order_status_failed_id' => 10, 
         ];
 
         foreach ($keys as $key) {
