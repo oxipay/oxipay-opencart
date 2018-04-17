@@ -1,12 +1,12 @@
 <?php
-class ControllerExtensionPaymentOxipay extends Controller {
+class ControllerPaymentOxipay extends Controller {
     private $error = [];
 
     /**
      * @return string
      */
     public function index() {
-        $language_data = $this->load->language('extension/payment/oxipay');
+        $language_data = $this->load->language('payment/oxipay');
 
         $this->document->setTitle($this->language->get('heading_title'));
 
@@ -17,7 +17,7 @@ class ControllerExtensionPaymentOxipay extends Controller {
 
             $this->session->data['success'] = $this->language->get('text_success');
 
-            $this->response->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=payment', true));
+            $this->response->redirect($this->url->link('extension/payment', 'token=' . $this->session->data['token'] . '&type=payment', true));
         }
 
         // Error Strings
@@ -50,16 +50,16 @@ class ControllerExtensionPaymentOxipay extends Controller {
                 'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true),
             ], [
                 'text' => $this->language->get('text_extension'),
-                'href' => $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=payment', true),
+                'href' => $this->url->link('extension/payment', 'token=' . $this->session->data['token'] . '&type=payment', true),
             ], [
                 'text' => $this->language->get('heading_title'),
-                'href' => $this->url->link('extension/payment/oxipay', 'token=' . $this->session->data['token'], true),
+                'href' => $this->url->link('payment/oxipay', 'token=' . $this->session->data['token'], true),
             ],
         ];
 
         // Actions / Links
-        $data['action'] = $this->url->link('extension/payment/oxipay', 'token=' . $this->session->data['token'], true);
-        $data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=payment', true);
+        $data['action'] = $this->url->link('payment/oxipay', 'token=' . $this->session->data['token'], true);
+        $data['cancel'] = $this->url->link('extension/payment', 'token=' . $this->session->data['token'] . '&type=payment', true);
 
         // Dropdown Data
         $this->load->model('localisation/geo_zone');
@@ -91,9 +91,9 @@ class ControllerExtensionPaymentOxipay extends Controller {
         $defaults = [
             'oxipay_title' => 'Oxipay',
             'oxipay_description' => 'Pay the easier way',
-            'oxipay_order_status_completed_id' => 5, 
-            'oxipay_order_status_pending_id'=> 1, 
-            'oxipay_order_status_failed_id' => 10, 
+            'oxipay_order_status_completed_id' => 5,  
+            'oxipay_order_status_pending_id'=> 1,  
+            'oxipay_order_status_failed_id' => 10,  
         ];
 
         foreach ($keys as $key) {
@@ -112,14 +112,14 @@ class ControllerExtensionPaymentOxipay extends Controller {
         $data['footer'] = $this->load->controller('common/footer');
 
         // Render Output
-        $this->response->setOutput($this->load->view('extension/payment/oxipay', $data));
+        $this->response->setOutput($this->load->view('payment/oxipay', $data));
     }
 
     /**
      * @return bool
      */
     protected function validate() {
-        if (!$this->user->hasPermission('modify', 'extension/payment/oxipay')) {
+        if (!$this->user->hasPermission('modify', 'extension/payment')) { // QUESTION: "payment/oxipay" and "extension/payment" both works here
             $this->error['oxipay_warning'] = $this->language->get('error_permission');
         }
 

@@ -1,5 +1,5 @@
 <?php
-class ControllerExtensionPaymentOxipay extends Controller {
+class ControllerPaymentOxipay extends Controller {
     const IS_DEBUG = false;
 
     /**
@@ -10,8 +10,8 @@ class ControllerExtensionPaymentOxipay extends Controller {
     public function __construct($registry) {
         parent::__construct($registry);
 
-		$this->load->language('extension/payment/oxipay');
-        $this->load->model('extension/payment/oxipay');
+		$this->load->language('payment/oxipay');
+        $this->load->model('payment/oxipay');
         $this->load->model('checkout/order');
     }
 
@@ -24,13 +24,13 @@ class ControllerExtensionPaymentOxipay extends Controller {
 
             $data['text_loading'] = $this->language->get('text_loading');
 
-            $data['params'] = $this->model_extension_payment_oxipay->getParams();
+            $data['params'] = $this->model_payment_oxipay->getParams();
 
-            $data['action'] = $this->model_extension_payment_oxipay->getGatewayUrl();
+            $data['action'] = $this->model_payment_oxipay->getGatewayUrl();
         } else {
             $data['error'] = sprintf($this->language->get('error_amount'), $this->currency->format(20, $this->session->data['currency'], 1));
         }
-        return $this->load->view('extension/payment/oxipay', $data);
+        return $this->load->view('payment/oxipay', $data);
     }
 
     /**
@@ -42,19 +42,19 @@ class ControllerExtensionPaymentOxipay extends Controller {
         // Validate Response
         try {
             $order_info = $this->getOrderAndVerifyResponse($this->request->post);
-        } catch (\Exception $e) {
-            // Handle callback error
-            $reference_id = "";
-            if (isset($this->request->post['x_reference'])){
-                $reference_id = $this->request->post['x_reference'];
-            }
-            return $this->callbackBadRequest($reference_id, $e->getMessage());
-        }
+        } catch (\Exception $e) { 
+            // Handle callback error 
+            $reference_id = ""; 
+            if (isset($this->request->post['x_reference'])){ 
+                $reference_id = $this->request->post['x_reference']; 
+            } 
+            return $this->callbackBadRequest($reference_id, $e->getMessage()); 
+        } 
 
-        $result = $this->updateOrder($order_info, $this->request->post);
+        $result = $this->updateOrder($order_info, $this->request->post); 
 
-        $this->response->addHeader('Content-type: application/json');
-        $this->response->setOutput(json_encode(['reference_id' => $this->request->post['x_reference'], 'status' => $result]));
+        $this->response->addHeader('Content-type: application/json'); 
+        $this->response->setOutput(json_encode(['reference_id' => $this->request->post['x_reference'], 'status' => $result])); 
     }
 
     /**
@@ -104,7 +104,7 @@ class ControllerExtensionPaymentOxipay extends Controller {
      *
      * @return void
      */
-    private function callbackBadRequest($reference_id, $comment) {
+    private function callbackBadRequest($reference_id, $comment) { 
         $params = [];
 
         foreach ($this->request->post as $key => $value) {
@@ -115,8 +115,8 @@ class ControllerExtensionPaymentOxipay extends Controller {
 
         $this->response->addHeader($this->request->server['SERVER_PROTOCOL'] . ' 400 Bad Request');
 
-        $this->response->addHeader('Content-type: application/json');
-        $this->response->setOutput(json_encode(["reference_id" => $reference_id, "status" => $comment]));
+        $this->response->addHeader('Content-type: application/json'); 
+        $this->response->setOutput(json_encode(["reference_id" => $reference_id, "status" => $comment])); 
     }
 
     /**
@@ -136,13 +136,12 @@ class ControllerExtensionPaymentOxipay extends Controller {
             'x_result',
         ];
 
-        // Required
-        // if an item exists(and is not empty) in $request, remove it from the $required array
-        // $required should be empty by the end to indicate all required items have been provided.
-        foreach ($required as $seq => $value) {
-            if (isset($request[$value]) && !empty($request[$value])) {
-                unset($required[$seq]);
-            }
+        // if an item exists(and is not empty) in $request, remove it from the $required array 
+        // $required should be empty by the end to indicate all required items have been provided. 
+        foreach ($required as $seq => $value) { 
+            if (isset($request[$value]) && !empty($request[$value])) { 
+                unset($required[$seq]); 
+            } 
         }
 
         if (!empty($required)) {
@@ -150,7 +149,7 @@ class ControllerExtensionPaymentOxipay extends Controller {
         }
 
         // Validate Signature
-        if (!$this->model_extension_payment_oxipay->validateSignature($request)) {
+        if (!$this->model_payment_oxipay->validateSignature($request)) {
             throw new \Exception('Bad Request. Unable to validate signature.');
         }
 
@@ -168,7 +167,7 @@ class ControllerExtensionPaymentOxipay extends Controller {
      * @param mixed[] $request
      */
     private function updateOrder($order_info, $request) {
-        $order_status_id = $this->model_extension_payment_oxipay->getStatus($request['x_result']);
+        $order_status_id = $this->model_payment_oxipay->getStatus($request['x_result']);
 
         if ($order_status_id == $order_info['order_status_id']) {
             return;
@@ -184,7 +183,7 @@ class ControllerExtensionPaymentOxipay extends Controller {
         $comment = strip_tags($comment);
 
         $this->model_checkout_order->addOrderHistory($order_info['order_id'], $order_status_id, $comment, false);
-        return $request['x_result'];
+        return $request['x_result']; 
     }
 
     /**

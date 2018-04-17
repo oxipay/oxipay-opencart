@@ -1,5 +1,5 @@
 <?php
-class ModelExtensionPaymentOxipay extends Model {
+class ModelPaymentOxipay extends Model {
     /**
      * @param mixed[] $address
      * @param double $total
@@ -106,13 +106,13 @@ class ModelExtensionPaymentOxipay extends Model {
             'x_shop_country' => $this->config->get('oxipay_region'),
             'x_shop_name' => $this->config->get('oxipay_shop_name'),
             'x_test' => 'false',
-            'x_url_callback' => $this->url->link('extension/payment/oxipay/callback', '', true),
+            'x_url_callback' => $this->url->link('payment/oxipay/callback', '', true),
             // Proxy files required as gateway doesn't append resulting request
             //  arguments to existing ones.
             // 'x_url_cancel' => $url_prefix . 'oxipay/cancel.php',
             // 'x_url_complete' => $url_prefix . 'oxipay/complete.php',
-            'x_url_cancel' => $this->url->link('extension/payment/oxipay/cancel', '', true),
-            'x_url_complete' => $this->url->link('extension/payment/oxipay/complete', '', true),
+            'x_url_cancel' => $this->url->link('payment/oxipay/cancel', '', true),
+            'x_url_complete' => $this->url->link('payment/oxipay/complete', '', true),
 
             // Optional
             'x_customer_first_name' => $order_info['payment_firstname'],
