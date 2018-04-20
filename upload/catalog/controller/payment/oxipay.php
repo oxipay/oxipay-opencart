@@ -30,7 +30,12 @@ class ControllerPaymentOxipay extends Controller {
         } else {
             $data['error'] = sprintf($this->language->get('error_amount'), $this->currency->format(20, $this->session->data['currency'], 1));
         }
-        return $this->load->view('payment/oxipay', $data);
+        if (version_compare(VERSION, '2.2.0.0', '>=')) {
+			$tpl_path = 'payment/oxipay';
+		} else {
+			$tpl_path = $this->config->get('config_template') . '/template/' . 'payment/oxipay' . '.tpl';
+		}
+        return $this->load->view($tpl_path, $data);
     }
 
     /**

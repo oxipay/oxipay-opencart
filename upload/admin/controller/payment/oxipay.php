@@ -112,7 +112,12 @@ class ControllerPaymentOxipay extends Controller {
         $data['footer'] = $this->load->controller('common/footer');
 
         // Render Output
-        $this->response->setOutput($this->load->view('payment/oxipay', $data));
+        if (version_compare(VERSION, '2.2.0.0', '>=')) {
+			$tpl_path = 'payment/oxipay';
+		} else {
+			$tpl_path = 'payment/oxipay' . '.tpl';
+		}
+        $this->response->setOutput($this->load->view($tpl_path, $data));
     }
 
     /**
